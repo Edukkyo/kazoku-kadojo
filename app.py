@@ -23,6 +23,8 @@ if DATABASE_URL:
     elif DATABASE_URL.startswith("postgresql://"):
         DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 else:
+    if os.environ.get("RENDER"):
+        raise RuntimeError("Configure DATABASE_URL with a persistent PostgreSQL database on Render.")
     DATABASE_URL = f"sqlite:///{DATABASE.as_posix()}"
 
 engine = create_engine(

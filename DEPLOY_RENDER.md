@@ -1,19 +1,18 @@
-# Publicar na Render
+# Publicar na Render com banco gratuito
 
-1. Envie o conteúdo desta pasta para a raiz de um repositório no GitHub.
-2. No Render, crie **New + > Blueprint** e conecte o repositório.
-3. Revise os recursos definidos em `render.yaml` antes de confirmar:
-   - Serviço web `kazoku-dojo`, no plano gratuito. Ele pode entrar em suspensão após inatividade e demorar para responder ao primeiro acesso.
-   - PostgreSQL `kazoku-dojo-db`, no plano pago `0.1c-256mb`, com 1 GB de armazenamento. O Render cobra pelo banco; confira o valor atual no dashboard antes de aprovar.
-4. Aguarde o primeiro deploy e teste a URL `onrender.com`.
-5. No serviço, acesse **Settings > Custom Domains** e adicione:
+1. Crie um projeto no [Neon](https://neon.com/) e escolha o plano Free. Copie a connection string PostgreSQL; mantenha-a privada.
+2. No Render, crie **New + > Blueprint** e conecte o repositório `Edukkyo/kazoku-kadojo`.
+3. Revise o Blueprint: ele cria somente o serviço web `kazoku-dojo`, no plano gratuito. O serviço pode dormir após 15 minutos sem tráfego e levar cerca de um minuto para voltar.
+4. No serviço Render, abra **Environment** e configure `DATABASE_URL` com a connection string do Neon. O app não inicia no Render sem essa variável, para evitar o uso acidental de SQLite efêmero.
+5. Aguarde o deploy e teste a URL `onrender.com`.
+6. No serviço, acesse **Settings > Custom Domains** e adicione:
    - `kazokukadojo.com.br`
    - `www.kazokukadojo.com.br`
-6. Configure no provedor do domínio exatamente os registros DNS apresentados pelo Render.
-7. Aguarde a propagação do DNS e a emissão automática do certificado HTTPS.
+7. Configure no provedor do domínio exatamente os registros DNS apresentados pelo Render.
+8. Aguarde a propagação do DNS e a emissão automática do certificado HTTPS.
 
-O app usa SQLite localmente e PostgreSQL quando o Render fornece `DATABASE_URL`. As contas locais existentes em `kazoku.db` não são migradas automaticamente para o banco remoto. O arquivo do banco local deve permanecer fora do repositório.
+O app usa SQLite localmente e PostgreSQL quando configurado. As contas locais existentes em `kazoku.db` não são migradas automaticamente para o Neon. O arquivo local permanece fora do repositório.
 
-O `KAZOKU_SECRET_KEY` é gerado pelo Blueprint e não deve ser compartilhado. Não publique arquivos de banco de dados com contas reais.
+O plano Free do Neon não exige cartão, inclui 1 GB de armazenamento por projeto e suspende o banco quando ocioso. O Render Free também pode suspender o site. Confira os limites atuais antes de usar em produção.
 
-As fotos enviadas para eventos ficam no disco local do serviço e não são persistentes no plano gratuito do Render. Para mantê-las após reinícios e deploys, configure armazenamento persistente ou armazenamento de objetos antes de usar esse recurso em produção.
+O `KAZOKU_SECRET_KEY` é gerado pelo Blueprint. Não compartilhe essa chave, a `DATABASE_URL` ou arquivos de banco com contas reais. Fotos enviadas para eventos ficam no disco efêmero do Render Free e podem desaparecer em reinícios e deploys.
